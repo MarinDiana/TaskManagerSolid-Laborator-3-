@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="TaskManagerSolid.Tests/TaskManagerSolid.Tests.csproj" Id="608ae020-2582-4a4c-9b9e-137ae6a8a008" />
+  <Project Path="TaskManagerSolid/TaskManagerSolid.csproj" />
+</Solution>
