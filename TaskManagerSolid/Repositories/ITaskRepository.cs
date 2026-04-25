@@ -1,14 +1,8 @@
-﻿using TaskManagerSolid.Models;
-using System.Collections.Generic;
+﻿using TaskManagerSolid.Interfaces;
 
 namespace TaskManagerSolid.Repositories
 {
-    public interface ITaskRepository
+    public interface ITaskRepository : ITaskReader, ITaskWriter
     {
-        List<TaskItem> GetAll();
-        TaskItem? GetById(int id);
-        void Add(TaskItem task);
-        void Update(TaskItem task);
-        void Delete(int id);
     }
 }

@@ -110,3 +110,18 @@ Toate testele trec cu succes.
 - SQLite
 - NUnit
 - Visual Studio
+
+## SOLID Principles (Lab 4)
+
+- ISP (Interface Segregation Principle):
+  Am separat ITaskRepository in doua interfete:
+  ITaskReader si ITaskWriter, astfel incat clasele sa foloseasca doar metodele de care au nevoie.
+
+- DIP (Dependency Inversion Principle):
+  Clasele depind de interfete (ITaskRepository, ITaskReader), nu de implementari concrete.
+
+- IoC Container:
+  Am folosit Microsoft.Extensions.DependencyInjection pentru a injecta dependentele in Program.cs.
+
+- ReportService:
+  Foloseste doar ITaskReader, demonstrand respectarea ISP.

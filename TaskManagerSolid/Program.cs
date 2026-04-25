@@ -1,56 +1,55 @@
-﻿using TaskManagerSolid.Models;
+﻿using Microsoft.Extensions.DependencyInjection;
+using TaskManagerSolid.Interfaces;
+using TaskManagerSolid.Models;
 using TaskManagerSolid.Repositories;
 using TaskManagerSolid.Services;
 using TaskManagerSolid.Notifications;
 
-var repository = new SQLiteTaskRepository();
-var validator = new TaskValidator();
+var services = new ServiceCollection();
 
-var notifiers = new Dictionary<NotificationType, ITaskNotifier>
-{
-    { NotificationType.Console, new ConsoleNotifier() },
-    { NotificationType.Email, new EmailNotifier() },
-    { NotificationType.FileLog, new FileLogNotifier() },
-    { NotificationType.Slack, new SlackNotifier() }
-};
+services.AddSingleton<ITaskRepository, SQLiteTaskRepository>();
+services.AddSingleton<ITaskReader>(provider => provider.GetRequiredService<ITaskRepository>());
+services.AddSingleton<ITaskWriter>(provider => provider.GetRequiredService<ITaskRepository>());
 
-var service = new TaskService(repository, validator, notifiers);
+services.AddTransient<TaskValidator>();
+services.AddTransient<ReportService>();
 
-service.AddTask(new TaskItem(
-    1,
-    "Invat SOLID",
-    "Recapitulez principiile SRP, OCP si LSP",
+services.AddSingleton<Dictionary<NotificationType, ITaskNotifier>>(provider =>
+    new Dictionary<NotificationType, ITaskNotifier>
+    {
+        { NotificationType.Console, new ConsoleNotifier() },
+        { NotificationType.Email, new EmailNotifier() },
+        { NotificationType.FileLog, new FileLogNotifier() },
+        { NotificationType.Slack, new SlackNotifier() }
+    });
+
+services.AddTransient<TaskService>();
+
+var provider = services.BuildServiceProvider();
+
+var taskService = provider.GetRequiredService<TaskService>();
+var reportService = provider.GetRequiredService<ReportService>();
+
+taskService.AddTask(new TaskItem(
+    10,
+    "Laborator 4 ISP si DIP",
+    "Refactorizare proiect Task Manager",
     TaskPriority.High,
     NotificationType.Console));
 
-service.AddTask(new DeadlineTask(
-    2,
-    "Predau tema",
-    "Incarc proiectul pe GitHub",
+taskService.AddTask(new DeadlineTask(
+    11,
+    "Predare laborator 4",
+    "Incarcare proiect pe GitHub",
     TaskPriority.High,
     NotificationType.Email,
     DateTime.Now.AddDays(2)));
 
-service.AddTask(new RecurringTask(
-    3,
-    "Backup proiect",
-    "Salvez proiectul periodic",
-    TaskPriority.Medium,
-    NotificationType.FileLog,
-    DateTime.Now.AddDays(1),
-    7));
+taskService.CompleteTask(10);
 
-service.AddTask(new TaskItem(
-    4,
-    "Anunt pe Slack",
-    "Testez SlackNotifier",
-    TaskPriority.Low,
-    NotificationType.Slack));
-
-service.CompleteTask(1);
-
-foreach (var task in service.GetTasks())
+foreach (var task in taskService.GetTasks())
 {
-    Console.WriteLine(
-        $"{task.Id} - {task.Title} - {task.TaskType} - {task.Priority} - {task.Status}");
+    Console.WriteLine($"{task.Id} - {task.Title} - {task.TaskType} - {task.Priority} - {task.Status}");
 }
+
+Console.WriteLine(reportService.GenerateSummary());
