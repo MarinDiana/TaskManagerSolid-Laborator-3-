@@ -113,15 +113,39 @@ Toate testele trec cu succes.
 
 ## SOLID Principles (Lab 4)
 
-- ISP (Interface Segregation Principle):
-  Am separat ITaskRepository in doua interfete:
-  ITaskReader si ITaskWriter, astfel incat clasele sa foloseasca doar metodele de care au nevoie.
+### SRP (Single Responsibility Principle)
+Fiecare clasa are o singura responsabilitate:
+- TaskService gestioneaza logica de business
+- TaskValidator valideaza datele
+- Repository gestioneaza accesul la date
 
-- DIP (Dependency Inversion Principle):
-  Clasele depind de interfete (ITaskRepository, ITaskReader), nu de implementari concrete.
+---
 
-- IoC Container:
-  Am folosit Microsoft.Extensions.DependencyInjection pentru a injecta dependentele in Program.cs.
+### OCP (Open Closed Principle)
+Sistemul este deschis pentru extensie si inchis pentru modificare:
+- se pot adauga noi tipuri de notificari (ex: SlackNotifier) fara modificarea codului existent
 
-- ReportService:
-  Foloseste doar ITaskReader, demonstrand respectarea ISP.
+---
+
+### LSP (Liskov Substitution Principle)
+Clasele derivate (RecurringTask, DeadlineTask) pot inlocui clasa de baza TaskItem fara a afecta functionalitatea.
+
+---
+
+### ISP (Interface Segregation Principle)
+Interfata ITaskRepository a fost separata in:
+- ITaskReader (GetAll, GetById)
+- ITaskWriter (Add, Update, Delete)
+
+Astfel, clasele folosesc doar metodele de care au nevoie.
+
+Exemplu:
+```csharp
+public class ReportService
+{
+    private readonly ITaskReader reader;
+}
+
+## Concluzie
+
+Aplicatia respecta toate principiile SOLID si demonstreaza o arhitectura modulara, extensibila si usor de intretinut.
